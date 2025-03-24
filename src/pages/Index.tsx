@@ -6,6 +6,7 @@ import Features from '../components/Features';
 import Philosophy from '../components/Philosophy';
 import Analysis from '../components/Analysis';
 import ContentAnalyzer from '../components/ContentAnalyzer';
+import Login from '../components/Login';
 import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
 
@@ -18,6 +19,7 @@ const Index = () => {
       <Philosophy />
       <Analysis />
       <ContentAnalyzer />
+      <Login />
       <Newsletter />
       <Footer />
     </div>

@@ -161,7 +161,7 @@ const ContentAnalyzer = () => {
                 </div>
                 
                 <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
-                  <span className="text-sm font-medium text-primary">Plain English Explanation</span>
+                  <span className="text-sm font-medium text-primary">Result</span>
                   <p className="mt-1">
                     {result.plainEnglish}
                   </p>
