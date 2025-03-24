@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Brain } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Navigation = () => {
@@ -22,19 +22,18 @@ const Navigation = () => {
     { name: 'Features', href: '#product' },
     { name: 'Philosophy', href: '#philosophy' },
     { name: 'Analysis', href: '#analysis' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'Content Analyzer', href: '#content-analyzer' },
   ];
 
   return (
     <header className={cn(
       "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 md:px-12 py-4",
-      isScrolled ? "bg-white/80 backdrop-blur-md shadow-sm" : "bg-transparent"
+      isScrolled ? "bg-card/80 backdrop-blur-md shadow-md" : "bg-transparent"
     )}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <a href="#" className="flex items-center space-x-2">
-          <div className="relative w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <div className="absolute w-6 h-6 rounded-full bg-primary/30 animate-float"></div>
-            <div className="w-3 h-3 rounded-full bg-primary z-10"></div>
+          <div className="relative w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+            <Brain size={24} className="text-primary animate-pulse" />
           </div>
           <span className="text-lg font-semibold tracking-tight">NeuralSafe</span>
         </a>
