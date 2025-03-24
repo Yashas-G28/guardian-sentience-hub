@@ -19,8 +19,9 @@ const Navigation = () => {
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   const navLinks = [
-    { name: 'Product', href: '#product' },
+    { name: 'Features', href: '#product' },
     { name: 'Philosophy', href: '#philosophy' },
+    { name: 'Analysis', href: '#analysis' },
     { name: 'Contact', href: '#contact' },
   ];
 
@@ -35,7 +36,7 @@ const Navigation = () => {
             <div className="absolute w-6 h-6 rounded-full bg-primary/30 animate-float"></div>
             <div className="w-3 h-3 rounded-full bg-primary z-10"></div>
           </div>
-          <span className="text-lg font-semibold tracking-tight">Essence</span>
+          <span className="text-lg font-semibold tracking-tight">NeuralSafe</span>
         </a>
 
         <nav className="hidden md:flex space-x-8">

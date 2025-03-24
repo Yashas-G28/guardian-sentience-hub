@@ -35,16 +35,16 @@ const Hero = () => {
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="flex flex-col items-center text-center space-y-6">
           <div className="bg-primary/10 text-primary text-xs rounded-full px-4 py-1.5 mb-2 opacity-0 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
-            Introducing Essence
+            Introducing NeuralSafe
           </div>
           
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight opacity-0 animate-fade-in text-balance" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
-            <span className="block">Simplicity is the ultimate</span>
-            <span className="block mt-1">sophistication</span>
+            <span className="block">The Future of Intelligent</span>
+            <span className="block mt-1">Content Moderation</span>
           </h1>
           
           <p className="max-w-xl text-foreground/70 text-lg md:text-xl opacity-0 animate-fade-in text-balance" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
-            Crafted with precision, designed with purpose. Experience the power of design that puts human needs first.
+            A cutting-edge, AI-powered moderation system engineered to detect, analyze, and neutralize harmful online content in real-time.
           </p>
           
           <div className="mt-8 flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-in" style={{ animationDelay: '0.8s', animationFillMode: 'forwards' }}>

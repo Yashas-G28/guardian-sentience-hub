@@ -15,7 +15,7 @@ const Newsletter = () => {
     
     toast({
       title: "Thank you for subscribing",
-      description: "We'll keep you updated on our latest news and products.",
+      description: "We'll keep you updated on NeuralSafe's latest features and news.",
     });
     
     setEmail('');
@@ -52,9 +52,9 @@ const Newsletter = () => {
         <div className={`glass-morphism rounded-3xl overflow-hidden shadow-sm opacity-0 ${isVisible ? 'animate-fade-in' : ''}`} style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
           <div className="p-8 md:p-12">
             <div className="text-center max-w-2xl mx-auto mb-8">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Stay in touch</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Stay updated</h2>
               <p className="text-foreground/70 text-balance">
-                Join our newsletter to receive updates about new products, features, and design insights.
+                Subscribe to our newsletter for the latest updates on content moderation technology and NeuralSafe features.
               </p>
             </div>
             
