@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { CheckCircle, AlertTriangle, XCircle, BarChart2, Shield } from 'lucide-react';
+import { CheckCircle, AlertTriangle, XCircle, BarChart2, Shield, Globe, Film } from 'lucide-react';
 
 const ContentAnalyzer = () => {
   const [content, setContent] = useState('');
@@ -34,18 +34,40 @@ const ContentAnalyzer = () => {
         'nobody likes you', 'you\'re nothing', 'kill yourself', 'you deserve', 
         'should die', 'everyone hates', 'pathetic', 'go cry', 'weak', 'failure'
       ];
+      const explicitWords = [
+        'ass', 'pussy', 'dick', 'fuck', 'shit', 'bitch', 'cunt', 'cock', 
+        'whore', 'slut', 'bastard', 'asshole', 'piss', 'tits', 'boobs'
+      ];
+      const deepfakeIndicators = [
+        'ai generated', 'deepfake', 'synthetic media', 'fake video', 
+        'artificially created', 'manipulated image', 'not real person'
+      ];
+      const foreignLanguageIndicators = [
+        'translate', 'foreign', 'non-english', 'multilingual',
+        // Common non-English words/phrases that might indicate foreign language
+        'hola', 'bonjour', 'こんにちは', '你好', 'привет', 'مرحبا'
+      ];
       
       // Check for various content categories
       const harmfulCount = harmfulWords.filter(word => contentLower.includes(word)).length;
       const misinfoCount = misinfoWords.filter(word => contentLower.includes(word)).length;
       const abusiveCount = abusiveWords.filter(word => contentLower.includes(word)).length;
       const bullyingCount = bullyingPhrases.filter(phrase => contentLower.includes(phrase)).length;
+      const explicitCount = explicitWords.filter(word => contentLower.includes(word)).length;
+      const deepfakeCount = deepfakeIndicators.filter(indicator => contentLower.includes(indicator)).length;
+      const foreignCount = foreignLanguageIndicators.filter(indicator => contentLower.includes(indicator)).length;
       
+      // Prioritize detection based on severity (highest to lowest)
       if (bullyingCount > 0) {
         score = 0.7 + (bullyingCount * 0.1);
         category = 'bullying content';
         details = `Detected ${bullyingCount} bullying ${bullyingCount === 1 ? 'phrase' : 'phrases'} that may cause emotional harm.`;
         plainEnglish = 'This content contains language patterns typically associated with bullying behavior. It includes phrases meant to demean, intimidate, or cause emotional distress to the recipient.';
+      } else if (explicitCount > 0) {
+        score = 0.6 + (explicitCount * 0.1);
+        category = 'explicit language';
+        details = `Found ${explicitCount} instances of explicit language that violates community standards.`;
+        plainEnglish = 'This content contains explicit language that violates our community standards. Such language is inappropriate and may be offensive to many users.';
       } else if (abusiveCount > 0) {
         score = 0.5 + (abusiveCount * 0.1);
         category = 'abusive language';
@@ -61,13 +83,24 @@ const ContentAnalyzer = () => {
         category = 'potential misinformation';
         details = `Identified ${misinfoCount} phrases commonly associated with misinformation.`;
         plainEnglish = 'This content has language patterns commonly used in misleading information. It contains phrases frequently seen in content designed to spread unverified claims.';
+      } else if (deepfakeCount > 0) {
+        score = 0.45 + (deepfakeCount * 0.15);
+        category = 'potential synthetic media';
+        details = `Identified ${deepfakeCount} indicators of AI-generated or manipulated media.`;
+        plainEnglish = 'This content appears to reference or contain synthetic media created using AI. It may include deepfake videos, artificially generated images, or other manipulated content.';
+      } else if (foreignCount > 0) {
+        // Lower risk score for foreign language - just flagging for review
+        score = 0.25 + (foreignCount * 0.05);
+        category = 'non-english content';
+        details = `Detected indicators of non-English content that may require specialized review.`;
+        plainEnglish = 'This content appears to contain non-English text or references multilingual content. Our system has flagged it for specialized review to ensure proper moderation across languages.';
       } else {
         // Calculate general safety score based on content length and complexity
         const wordCount = content.split(/\s+/).length;
         score = Math.min(0.1 + (wordCount > 20 ? 0.1 : 0), 0.2);
         category = 'safe';
         details = 'No harmful content detected. Content appears to be safe.';
-        plainEnglish = 'This content seems safe. We didn\'t find any concerning language or patterns that would suggest harmful intent, abusive language, bullying, or misinformation.';
+        plainEnglish = 'This content seems safe. We didn\'t find any concerning language or patterns that would suggest harmful intent, explicit language, abusive language, bullying, deepfakes, or misinformation.';
       }
       
       setResult({
@@ -93,6 +126,12 @@ const ContentAnalyzer = () => {
     return <XCircle className="h-5 w-5 text-red-500" />;
   };
 
+  const getCategoryIcon = (category: string) => {
+    if (category === 'non-english content') return <Globe className="h-4 w-4 mr-2 text-blue-500" />;
+    if (category === 'potential synthetic media') return <Film className="h-4 w-4 mr-2 text-purple-500" />;
+    return null;
+  };
+
   return (
     <section id="content-analyzer" className="section-padding bg-gradient-to-b from-background to-card/50">
       <div className="max-w-4xl mx-auto px-6">
@@ -101,7 +140,7 @@ const ContentAnalyzer = () => {
             Content Analyzer
           </h2>
           <p className="text-foreground/70 max-w-2xl mx-auto">
-            Test our AI-powered content moderation system. Enter any text to analyze for potential harmful content, abusive language, bullying, misinformation, or policy violations.
+            Test our AI-powered content moderation system. Enter any text to analyze for potential harmful content, explicit language, abusive language, bullying, deepfakes, multilingual content, or misinformation.
           </p>
         </div>
 
@@ -114,7 +153,7 @@ const ContentAnalyzer = () => {
               id="content"
               rows={5}
               className="w-full rounded-lg bg-background border border-border p-3 focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Enter text to analyze for potentially harmful content, abusive language, or bullying..."
+              placeholder="Enter text to analyze for potentially harmful content, explicit language, abusive language, bullying, deepfakes, or non-English content..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />
@@ -164,7 +203,8 @@ const ContentAnalyzer = () => {
                   
                   <div className="bg-secondary/50 rounded-lg p-4">
                     <span className="text-sm font-medium text-foreground/70">Content Category</span>
-                    <p className="font-medium capitalize mt-1">
+                    <p className="font-medium capitalize mt-1 flex items-center">
+                      {getCategoryIcon(result.category)}
                       {result.category}
                     </p>
                   </div>
