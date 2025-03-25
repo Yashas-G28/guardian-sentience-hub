@@ -26,15 +26,32 @@ const ContentAnalyzer = () => {
       let details = '';
       let plainEnglish = '';
       
-      // Simple analysis logic based on keywords
+      // Extended analysis logic with categories for harmful content
       const harmfulWords = ['hate', 'kill', 'attack', 'threat', 'violence', 'racist'];
       const misinfoWords = ['fake news', 'conspiracy', 'hoax', 'they don\'t want you to know'];
+      const abusiveWords = ['stupid', 'idiot', 'dumb', 'moron', 'loser', 'worthless', 'useless'];
+      const bullyingPhrases = [
+        'nobody likes you', 'you\'re nothing', 'kill yourself', 'you deserve', 
+        'should die', 'everyone hates', 'pathetic', 'go cry', 'weak', 'failure'
+      ];
       
-      // Check for harmful content
+      // Check for various content categories
       const harmfulCount = harmfulWords.filter(word => contentLower.includes(word)).length;
       const misinfoCount = misinfoWords.filter(word => contentLower.includes(word)).length;
+      const abusiveCount = abusiveWords.filter(word => contentLower.includes(word)).length;
+      const bullyingCount = bullyingPhrases.filter(phrase => contentLower.includes(phrase)).length;
       
-      if (harmfulCount > 0) {
+      if (bullyingCount > 0) {
+        score = 0.7 + (bullyingCount * 0.1);
+        category = 'bullying content';
+        details = `Detected ${bullyingCount} bullying ${bullyingCount === 1 ? 'phrase' : 'phrases'} that may cause emotional harm.`;
+        plainEnglish = 'This content contains language patterns typically associated with bullying behavior. It includes phrases meant to demean, intimidate, or cause emotional distress to the recipient.';
+      } else if (abusiveCount > 0) {
+        score = 0.5 + (abusiveCount * 0.1);
+        category = 'abusive language';
+        details = `Found ${abusiveCount} instances of abusive language that may be offensive or demeaning.`;
+        plainEnglish = 'This content contains abusive language that could be considered offensive or demeaning to individuals. Such language often violates community guidelines on respectful communication.';
+      } else if (harmfulCount > 0) {
         score = 0.3 + (harmfulCount * 0.2);
         category = 'potentially harmful';
         details = `Detected ${harmfulCount} potentially harmful terms that may violate community guidelines.`;
@@ -50,7 +67,7 @@ const ContentAnalyzer = () => {
         score = Math.min(0.1 + (wordCount > 20 ? 0.1 : 0), 0.2);
         category = 'safe';
         details = 'No harmful content detected. Content appears to be safe.';
-        plainEnglish = 'This content seems safe. We didn\'t find any concerning language or patterns that would suggest harmful intent or misinformation.';
+        plainEnglish = 'This content seems safe. We didn\'t find any concerning language or patterns that would suggest harmful intent, abusive language, bullying, or misinformation.';
       }
       
       setResult({
@@ -84,7 +101,7 @@ const ContentAnalyzer = () => {
             Content Analyzer
           </h2>
           <p className="text-foreground/70 max-w-2xl mx-auto">
-            Test our AI-powered content moderation system. Enter any text to analyze for potential harmful content, misinformation, or policy violations.
+            Test our AI-powered content moderation system. Enter any text to analyze for potential harmful content, abusive language, bullying, misinformation, or policy violations.
           </p>
         </div>
 
@@ -97,7 +114,7 @@ const ContentAnalyzer = () => {
               id="content"
               rows={5}
               className="w-full rounded-lg bg-background border border-border p-3 focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="Enter text to analyze for potential policy violations..."
+              placeholder="Enter text to analyze for potentially harmful content, abusive language, or bullying..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />
