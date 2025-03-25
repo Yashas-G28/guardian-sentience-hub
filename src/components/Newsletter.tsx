@@ -1,6 +1,5 @@
 
 import React, { useRef, useState, useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Newsletter = () => {
@@ -39,20 +38,10 @@ const Newsletter = () => {
         <div className={`glass-morphism rounded-3xl overflow-hidden shadow-sm opacity-0 ${isVisible ? 'animate-fade-in' : ''}`} style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
           <div className="p-8 md:p-12">
             <div className="text-center max-w-2xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Stay updated</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-br from-primary to-primary/70 bg-clip-text text-transparent">Stay Connected</h2>
               <p className="text-foreground/70 text-balance mb-6">
                 Follow our journey as we develop cutting-edge content moderation technology and expand NeuralSafe's features.
               </p>
-              
-              <div className="flex justify-center mt-6">
-                <a 
-                  href="#about" 
-                  className="bg-primary text-white font-medium px-6 py-3 rounded-full hover-scale flex items-center justify-center"
-                >
-                  Learn More
-                  <ArrowRight size={16} className="ml-2" />
-                </a>
-              </div>
             </div>
           </div>
         </div>

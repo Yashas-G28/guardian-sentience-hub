@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -101,7 +102,7 @@
   }
 
   .glass-morphism {
-    @apply bg-white/70 backdrop-blur-md border border-white/20;
+    @apply bg-white/70 backdrop-blur-md border border-white/20 transition-all duration-300 hover:shadow-md;
   }
 
   .section-padding {
@@ -118,5 +119,13 @@
 
   .text-balance {
     text-wrap: balance;
+  }
+  
+  .text-gradient-primary {
+    @apply bg-gradient-to-br from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:translate-y-[-2px];
   }
 }

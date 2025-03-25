@@ -1,6 +1,9 @@
 
 import React, { useState } from 'react';
-import { CheckCircle, AlertTriangle, XCircle, BarChart2, Shield, Globe, Film } from 'lucide-react';
+import { Shield } from 'lucide-react';
+import ContentAnalyzerResult from './ContentAnalyzer/ContentAnalyzerResult';
+import { Button } from './ui/button';
+import { Textarea } from './ui/textarea';
 
 const ContentAnalyzer = () => {
   const [content, setContent] = useState('');
@@ -10,7 +13,24 @@ const ContentAnalyzer = () => {
     category: string;
     details: string;
     plainEnglish: string;
+    isDeepfake: boolean;
   }>(null);
+
+  // Comprehensive list of abusive words
+  const abusiveWords = [
+    'arse', 'arsehead', 'arsehole', 'ass', 'ass hole', 'asshole', 'bastard', 'bitch', 'bloody', 
+    'bollocks', 'brotherfucker', 'bugger', 'bullshit', 'child-fucker', 'christ on a bike', 
+    'christ on a cracker', 'cock', 'cocksucker', 'crap', 'cunt', 'dammit', 'damn', 'damned', 
+    'damn it', 'dick', 'dick-head', 'dickhead', 'dumb ass', 'dumb-ass', 'dumbass', 'dyke', 
+    'faggot', 'father-fucker', 'fatherfucker', 'fuck', 'fucked', 'fucker', 'fucking', 
+    'god dammit', 'goddammit', 'god damn', 'goddamn', 'goddamned', 'goddamnit', 'godsdamn', 
+    'hell', 'holy shit', 'horseshit', 'in shit', 'jackarse', 'jack-ass', 'jackass', 
+    'jesus christ', 'jesus fuck', 'jesus harold christ', 'jesus h. christ', 
+    'jesus, mary and joseph', 'jesus wept', 'kike', 'mother fucker', 'mother-fucker', 
+    'motherfucker', 'nigga', 'nigra', 'pigfucker', 'piss', 'prick', 'pussy', 
+    'shit', 'shit ass', 'shite', 'sibling fucker', 'sisterfuck', 'sisterfucker', 
+    'slut', 'son of a bitch', 'son of a whore', 'spastic', 'sweet jesus', 'twat', 'wanker'
+  ];
 
   const analyzeContent = () => {
     if (!content.trim()) return;
@@ -25,23 +45,22 @@ const ContentAnalyzer = () => {
       let category = 'safe';
       let details = '';
       let plainEnglish = '';
+      let isDeepfake = false;
       
       // Extended analysis logic with categories for harmful content
       const harmfulWords = ['hate', 'kill', 'attack', 'threat', 'violence', 'racist'];
       const misinfoWords = ['fake news', 'conspiracy', 'hoax', 'they don\'t want you to know'];
-      const abusiveWords = ['stupid', 'idiot', 'dumb', 'moron', 'loser', 'worthless', 'useless'];
       const bullyingPhrases = [
         'nobody likes you', 'you\'re nothing', 'kill yourself', 'you deserve', 
         'should die', 'everyone hates', 'pathetic', 'go cry', 'weak', 'failure'
       ];
-      const explicitWords = [
-        'ass', 'pussy', 'dick', 'fuck', 'shit', 'bitch', 'cunt', 'cock', 
-        'whore', 'slut', 'bastard', 'asshole', 'piss', 'tits', 'boobs'
-      ];
+      
       const deepfakeIndicators = [
         'ai generated', 'deepfake', 'synthetic media', 'fake video', 
-        'artificially created', 'manipulated image', 'not real person'
+        'artificially created', 'manipulated image', 'not real person', 'artificial intelligence generated',
+        'computer generated', 'machine learning created', 'fake face', 'generated face'
       ];
+      
       const foreignLanguageIndicators = [
         'translate', 'foreign', 'non-english', 'multilingual',
         // Common non-English words/phrases that might indicate foreign language
@@ -53,9 +72,11 @@ const ContentAnalyzer = () => {
       const misinfoCount = misinfoWords.filter(word => contentLower.includes(word)).length;
       const abusiveCount = abusiveWords.filter(word => contentLower.includes(word)).length;
       const bullyingCount = bullyingPhrases.filter(phrase => contentLower.includes(phrase)).length;
-      const explicitCount = explicitWords.filter(word => contentLower.includes(word)).length;
       const deepfakeCount = deepfakeIndicators.filter(indicator => contentLower.includes(indicator)).length;
       const foreignCount = foreignLanguageIndicators.filter(indicator => contentLower.includes(indicator)).length;
+      
+      // Set deepfake detection flag
+      isDeepfake = deepfakeCount > 0;
       
       // Prioritize detection based on severity (highest to lowest)
       if (bullyingCount > 0) {
@@ -63,16 +84,11 @@ const ContentAnalyzer = () => {
         category = 'bullying content';
         details = `Detected ${bullyingCount} bullying ${bullyingCount === 1 ? 'phrase' : 'phrases'} that may cause emotional harm.`;
         plainEnglish = 'This content contains language patterns typically associated with bullying behavior. It includes phrases meant to demean, intimidate, or cause emotional distress to the recipient.';
-      } else if (explicitCount > 0) {
-        score = 0.6 + (explicitCount * 0.1);
-        category = 'explicit language';
-        details = `Found ${explicitCount} instances of explicit language that violates community standards.`;
-        plainEnglish = 'This content contains explicit language that violates our community standards. Such language is inappropriate and may be offensive to many users.';
       } else if (abusiveCount > 0) {
-        score = 0.5 + (abusiveCount * 0.1);
-        category = 'abusive language';
-        details = `Found ${abusiveCount} instances of abusive language that may be offensive or demeaning.`;
-        plainEnglish = 'This content contains abusive language that could be considered offensive or demeaning to individuals. Such language often violates community guidelines on respectful communication.';
+        score = 0.6 + (abusiveCount * 0.1);
+        category = 'explicit/abusive language';
+        details = `Found ${abusiveCount} instances of explicit or abusive language that violates community standards.`;
+        plainEnglish = 'This content contains explicit or abusive language that violates our community standards. Such language is inappropriate and may be offensive to many users.';
       } else if (harmfulCount > 0) {
         score = 0.3 + (harmfulCount * 0.2);
         category = 'potentially harmful';
@@ -107,36 +123,19 @@ const ContentAnalyzer = () => {
         score: Math.min(score, 0.9),
         category,
         details,
-        plainEnglish
+        plainEnglish,
+        isDeepfake
       });
       
       setIsAnalyzing(false);
     }, 1500);
   };
 
-  const getRiskLevel = (score: number) => {
-    if (score < 0.3) return ['Low Risk', 'bg-green-500/20', 'text-green-500'];
-    if (score < 0.6) return ['Medium Risk', 'bg-yellow-500/20', 'text-yellow-500'];
-    return ['High Risk', 'bg-red-500/20', 'text-red-500'];
-  };
-
-  const getRiskIcon = (score: number) => {
-    if (score < 0.3) return <CheckCircle className="h-5 w-5 text-green-500" />;
-    if (score < 0.6) return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
-    return <XCircle className="h-5 w-5 text-red-500" />;
-  };
-
-  const getCategoryIcon = (category: string) => {
-    if (category === 'non-english content') return <Globe className="h-4 w-4 mr-2 text-blue-500" />;
-    if (category === 'potential synthetic media') return <Film className="h-4 w-4 mr-2 text-purple-500" />;
-    return null;
-  };
-
   return (
     <section id="content-analyzer" className="section-padding bg-gradient-to-b from-background to-card/50">
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gradient-primary">
             Content Analyzer
           </h2>
           <p className="text-foreground/70 max-w-2xl mx-auto">
@@ -144,15 +143,15 @@ const ContentAnalyzer = () => {
           </p>
         </div>
 
-        <div className="bg-card/60 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-border">
+        <div className="glass-morphism rounded-2xl p-6 shadow-lg border border-border/30">
           <div className="mb-4">
             <label htmlFor="content" className="block text-sm font-medium mb-2">
               Enter content to analyze
             </label>
-            <textarea
+            <Textarea
               id="content"
               rows={5}
-              className="w-full rounded-lg bg-background border border-border p-3 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full rounded-lg bg-background/50 border border-border p-3 focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="Enter text to analyze for potentially harmful content, explicit language, abusive language, bullying, deepfakes, or non-English content..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -160,7 +159,7 @@ const ContentAnalyzer = () => {
           </div>
           
           <div className="flex justify-end">
-            <button
+            <Button
               onClick={analyzeContent}
               disabled={isAnalyzing || !content.trim()}
               className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -171,61 +170,10 @@ const ContentAnalyzer = () => {
                 <Shield className="h-4 w-4 mr-2" />
               )}
               {isAnalyzing ? 'Analyzing...' : 'Analyze Content'}
-            </button>
+            </Button>
           </div>
           
-          {result && (
-            <div className="mt-6 animate-fade-in">
-              <div className="border-t border-border pt-6">
-                <div className="flex items-center mb-4">
-                  <h3 className="text-xl font-semibold flex items-center">
-                    Analysis Results
-                    <BarChart2 className="ml-2 h-5 w-5 text-primary" />
-                  </h3>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div className="bg-secondary/50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-foreground/70">Risk Level</span>
-                      <div className={`px-2 py-1 rounded-full text-xs font-medium flex items-center ${getRiskLevel(result.score)[1]}`}>
-                        {getRiskIcon(result.score)}
-                        <span className={`ml-1 ${getRiskLevel(result.score)[2]}`}>{getRiskLevel(result.score)[0]}</span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-background rounded-full h-2.5">
-                      <div 
-                        className="h-2.5 rounded-full bg-primary" 
-                        style={{ width: `${result.score * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-secondary/50 rounded-lg p-4">
-                    <span className="text-sm font-medium text-foreground/70">Content Category</span>
-                    <p className="font-medium capitalize mt-1 flex items-center">
-                      {getCategoryIcon(result.category)}
-                      {result.category}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="bg-secondary/50 rounded-lg p-4 mb-4">
-                  <span className="text-sm font-medium text-foreground/70">Technical Analysis</span>
-                  <p className="mt-1">
-                    {result.details}
-                  </p>
-                </div>
-                
-                <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
-                  <span className="text-sm font-medium text-primary">Result</span>
-                  <p className="mt-1">
-                    {result.plainEnglish}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+          {result && <ContentAnalyzerResult result={result} />}
         </div>
       </div>
     </section>
